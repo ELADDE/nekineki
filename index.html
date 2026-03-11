@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>נקי נקי - שירותי ניקיון בגוש עציון</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: '#4cb4e7' },
+                    fontFamily: { sans: ['Assistant', 'Rubik', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Rubik:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { font-family: 'Assistant', sans-serif; }
+        h1, h2, h3, .font-black { font-family: 'Rubik', sans-serif; }
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: #10b981; color: white; padding: 12px 24px; border-radius: 999px; font-weight: bold; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; animation: slideUpFade 0.3s forwards; }
+        .toast.error { background: #ef4444; }
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Smooth height transition for dynamic fields */
+        .dynamic-field-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, margin-top 0.3s ease-out;
+            margin-top: 0;
+        }
+        .dynamic-field-container.show {
+            max-height: 100px;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-brand selection:text-white">
+
+    <!-- Top Bar -->
+    <div id="top-bar" class="hidden md:flex bg-slate-950 text-slate-300 text-sm py-2 px-6 justify-between items-center border-b border-slate-800">
+        <div class="flex items-center gap-6">
+            <span class="flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-brand"></i> 052-2113053 | 055-2765425</span>
+            <span class="flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-brand"></i> שירות ביישובי גוש עציון בלבד</span>
+        </div>
+        <div>
+            <button onclick="navigateTo('admin')" class="text-slate-600 hover:text-slate-400 transition-colors text-xs">כניסת מנהלים</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header" class="bg-slate-900 sticky top-0 z-40 shadow-lg border-b border-slate-800">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            
+            <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                <img src="https://ibb.co/xKL7Jz2c" alt="לוגו נקי נקי" class="w-12 h-12 object-contain rounded-xl">
+                <div>
+                    <h1 class="text-2xl font-black text-slate-50 tracking-tight leading-none m-0">נקי נקי</h1>
+                    <p class="text-brand text-xs font-medium m-0 mt-0.5">מומחי הניקיון של הגוש</p>
+                </div>
+            </div>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-8">
+                <button onclick="navigateTo('home')" class="text-slate-300 hover:text-brand font-medium transition-colors">ראשי</button>
+                <button onclick="scrollToServices()" class="text-slate-300 hover:text-brand font-medium transition-colors">שירותים</button>
+                <button onclick="navigateTo('book')" class="flex items-center gap-2 px-6 py-2.5 rounded-2xl font-bold bg-brand text-slate-900 shadow-[0_0_15px_rgba(76,180,231,0.4)] hover:-translate-y-1 transition-all">
+                    הזמנת ניקיון <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </button>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden text-slate-50 p-2" onclick="toggleMobileMenu()">
+                <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav -->
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-slate-900 border-b border-slate-800 shadow-xl flex flex-col p-4 gap-4">
+            <button onclick="navigateTo('home')" class="text-right text-slate-300 text-lg font-medium p-2 hover:bg-slate-800 rounded-lg">ראשי</button>
+            <button onclick="scrollToServices()" class="text-right text-slate-300 text-lg font-medium p-2 hover:bg-slate-800 rounded-lg">שירותים</button>
+            <button onclick="navigateTo('admin')" class="text-right text-slate-500 text-sm font-medium p-2">כניסת מנהלים</button>
+            <button onclick="navigateTo('book')" class="flex justify-center items-center gap-2 w-full mt-2 px-6 py-3 rounded-2xl font-bold bg-brand text-slate-900">
+                הזמנת ניקיון <i data-lucide="sparkles" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        
+        <!-- === HOME PAGE === -->
+        <section id="page-home" class="page-section active">
+            <!-- Hero -->
+            <div class="bg-slate-900 relative overflow-hidden py-20 md:py-32">
+                <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+                <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+                
+                <div class="container mx-auto px-4 relative z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="text-right space-y-6">
+                        <div class="inline-block bg-slate-800 border border-slate-700 text-brand px-4 py-1.5 rounded-full text-sm font-medium mb-2">מתכוננים לפסח בגוש עציון</div>
+                        <h2 class="text-5xl md:text-7xl font-black text-white leading-tight mb-4">לפסח הקרוב,<br/> מגיעים <span class="text-brand">בראש שקט.</span></h2>
+                        <p class="text-xl text-slate-300 max-w-lg leading-relaxed mb-6">שירותי הניקיון המתקדמים והיסודיים ביותר, ישירות אליכם הביתה. תנו לצוות המקצועי שלנו להבריק לכם את הבית לחג.</p>
+                        <div class="pt-4 flex flex-col sm:flex-row gap-4">
+                            <button onclick="navigateTo('book')" class="flex items-center justify-center px-8 py-4 rounded-2xl font-bold bg-brand text-slate-900 shadow-[0_0_15px_rgba(76,180,231,0.4)] hover:-translate-y-1 transition-all text-lg">הזמן עכשיו צוות</button>
+                            <button onclick="scrollToServices()" class="flex items-center justify-center px-8 py-4 rounded-2xl font-bold bg-slate-800 text-slate-50 border border-slate-600 transition-all text-lg">השירותים שלנו</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="bg-white py-12 border-b border-slate-100 shadow-sm relative z-20 -mt-6 mx-4 md:mx-auto md:w-[90%] rounded-3xl">
+                <div class="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="text-center flex flex-col items-center gap-3"><div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-brand"><i data-lucide="map-pin" class="w-8 h-8"></i></div><div><h3 class="font-bold text-slate-900 text-lg">קרובים אליכם</h3><p class="text-slate-500 text-sm">זמינות גבוהה בגוש עציון</p></div></div>
+                    <div class="text-center flex flex-col items-center gap-3"><div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-brand"><i data-lucide="shield-check" class="w-8 h-8"></i></div><div><h3 class="font-bold text-slate-900 text-lg">אחריות מלאה</h3><p class="text-slate-500 text-sm">על כל עבודה שמבוצעת</p></div></div>
+                    <div class="text-center flex flex-col items-center gap-3"><div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-brand"><i data-lucide="droplets" class="w-8 h-8"></i></div><div><h3 class="font-bold text-slate-900 text-lg">חומרים מקצועיים</h3><p class="text-slate-500 text-sm">ידידותיים לסביבה ויעילים</p></div></div>
+                    <div class="text-center flex flex-col items-center gap-3"><div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-brand"><i data-lucide="user-check" class="w-8 h-8"></i></div><div><h3 class="font-bold text-slate-900 text-lg">צוות מיומן</h3><p class="text-slate-500 text-sm">עובדים מנוסים ואמינים</p></div></div>
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div id="services-section" class="py-24 bg-slate-50">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl font-black text-slate-900 mb-4">מה אנחנו מנקים?</h2>
+                        <p class="text-slate-600 text-lg max-w-2xl mx-auto">התאמנו את חבילות השירות שלנו במיוחד לדרישות הניקיון הקפדניות של חג הפסח ולתחזוקה שוטפת.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-brand mb-6"><i data-lucide="home" class="w-7 h-7"></i></div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-3">ניקיון קומפלט לבית</h3>
+                            <p class="text-slate-600 leading-relaxed mb-8">שירות מקיף הכולל שטיפת רצפות, שאיבת שטיחים, ניקוי אבק מכל המשטחים, פאנלים ודלתות.</p>
+                            <button onclick="navigateTo('book')" class="text-brand font-bold flex items-center gap-2 w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i> מעבר להזמנה</button>
+                        </div>
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-brand mb-6"><i data-lucide="wind" class="w-7 h-7"></i></div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-3">ניקוי חלונות ותריסים</h3>
+                            <p class="text-slate-600 leading-relaxed mb-8">פירוק ושטיפה יסודית של תריסים, ניקוי מסילות, הברקת חלונות מכל הכיוונים למראה נקי וללא סימנים.</p>
+                            <button onclick="navigateTo('book')" class="text-brand font-bold flex items-center gap-2 w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i> מעבר להזמנה</button>
+                        </div>
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-brand mb-6"><i data-lucide="droplets" class="w-7 h-7"></i></div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-3">מטבחים וחדרי רחצה</h3>
+                            <p class="text-slate-600 leading-relaxed mb-8">ניקוי יסודי של ארונות מטבח (פנים וחוץ), מקררים, תנורים, חיטוי והסרת אבנית מכלים סניטריים וקרמיקה.</p>
+                            <button onclick="navigateTo('book')" class="text-brand font-bold flex items-center gap-2 w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i> מעבר להזמנה</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === BOOKING PAGE === -->
+        <section id="page-book" class="page-section bg-slate-100 py-12">
+            <div class="container mx-auto px-4 max-w-3xl">
+                <button onclick="navigateTo('home')" class="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-8"><i data-lucide="arrow-left" class="w-5 h-5"></i> חזרה לדף הבית</button>
+                <div class="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-200">
+                    <div class="bg-slate-900 p-8 text-center"><h2 class="text-3xl font-black text-white mb-2">טופס בקשת שירות</h2><p class="text-slate-300">אנא מלאו את הפרטים להערכת העבודה</p></div>
+                    <form id="booking-form" onsubmit="submitForm(event)" class="p-8 md:p-10 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block font-bold text-slate-700 mb-2">שם מלא *</label><input required type="text" id="form-name" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand" placeholder="ישראל ישראלי"></div>
+                            <div><label class="block font-bold text-slate-700 mb-2">מספר טלפון *</label><input required type="tel" id="form-phone" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand" placeholder="050-0000000" dir="ltr"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">יישוב מגורים *</label>
+                                <select required id="form-settlement" onchange="handleSettlementChange(this)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                                    <option value="" disabled selected>בחר יישוב</option>
+                                    <option value="אפרת">אפרת</option>
+                                    <option value="אלון שבות">אלון שבות</option>
+                                    <option value="כפר עציון">כפר עציון</option>
+                                    <option value="בת עין">בת עין</option>
+                                    <option value="אלעזר">אלעזר</option>
+                                    <option value="נווה דניאל">נווה דניאל</option>
+                                    <option value="תקוע">תקוע</option>
+                                    <option value="אחר">אחר (הזן ידנית)</option>
+                                </select>
+                                <!-- Custom settlement input that appears when 'אחר' is selected -->
+                                <div id="custom-settlement-container" class="dynamic-field-container">
+                                    <input type="text" id="form-custom-settlement" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand" placeholder="הקלד שם יישוב">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block font-bold text-slate-700 mb-2">גודל הנכס</label>
+                                <select id="form-size" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+                                    <option value="">בחר גודל</option><option value="דירת 3 חדרים">3 חדרים</option><option value="דירת 4 חדרים">4 חדרים</option><option value="דירת 5 חדרים">5 חדרים</option><option value="בית פרטי">בית פרטי</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-2">כמות עובדים רצויה</label>
+                            <input type="hidden" id="form-workers" value="2">
+                            <div class="flex gap-4" id="workers-options">
+                                <button type="button" onclick="setWorkersSelection('1', this)" class="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-slate-50 text-slate-600 border-slate-200">1</button>
+                                <button type="button" onclick="setWorkersSelection('2', this)" class="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-brand/10 text-brand border-brand">2</button>
+                                <button type="button" onclick="setWorkersSelection('3', this)" class="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-slate-50 text-slate-600 border-slate-200">3</button>
+                                <button type="button" onclick="setWorkersSelection('4+', this)" class="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-slate-50 text-slate-600 border-slate-200">4+</button>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2">* ההמלצה שלנו לבית סטנדרטי היא צוות של 2 עובדים.</p>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-2">הערות (לא חובה)</label>
+                            <textarea id="form-notes" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 resize-none"></textarea>
+                        </div>
+                        <button type="submit" id="submit-btn" class="w-full py-4 rounded-2xl font-bold bg-brand text-slate-900 text-lg">שלח בקשה לקבלת הצעת מחיר</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- === ADMIN PAGE === -->
+        <section id="page-admin" class="page-section bg-slate-100 min-h-[70vh] py-12">
+            <div id="admin-login-view" class="container mx-auto px-4 max-w-md">
+                <div class="bg-white p-8 rounded-3xl shadow-xl border border-slate-200 text-center">
+                    <h2 class="text-2xl font-black text-slate-900 mb-6">כניסת מנהלים</h2>
+                    <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                        <input type="password" id="admin-pwd" placeholder="הכנס סיסמה" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-center">
+                        <button type="submit" class="w-full py-3 rounded-2xl font-bold bg-brand text-slate-900">כניסה למערכת</button>
+                    </form>
+                    <button onclick="navigateTo('home')" class="mt-6 text-sm text-slate-500 hover:text-slate-800">חזרה לאתר</button>
+                </div>
+            </div>
+
+            <div id="admin-dashboard-view" class="hidden container mx-auto px-4 max-w-6xl">
+                <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <h1 class="text-2xl font-black text-slate-900">לוח בקרה - לידים</h1>
+                    <button onclick="logoutAdmin()" class="bg-slate-200 px-4 py-2 rounded-xl font-bold hover:bg-slate-300">יציאה</button>
+                </div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead><tr class="bg-slate-50 border-b text-slate-500 text-sm"><th class="p-4 font-bold">לקוח</th><th class="p-4 font-bold">גודל ועובדים</th><th class="p-4 font-bold">הערות</th><th class="p-4 font-bold">סטטוס</th><th class="p-4 font-bold text-center">פעולות</th></tr></thead>
+                        <tbody id="leads-table-body"><tr><td colspan="5" class="text-center p-8">טוען נתונים...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="main-footer" class="bg-slate-950 text-slate-400 py-12 border-t border-slate-800 mt-auto">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+            <div>
+                <h2 class="text-xl font-bold text-slate-100 mb-4">נקי נקי</h2>
+                <p class="text-sm leading-relaxed max-w-xs mx-auto md:mx-0">חברת הניקיון המובילה בגוש עציון. מומחים בניקיון יסודי, מהיר ואמין, עם צוות מקצועי וחומרים איכותיים.</p>
+            </div>
+            <div>
+                <h3 class="text-slate-100 font-bold mb-4 text-lg">יצירת קשר</h3>
+                <ul class="space-y-3 inline-block text-right">
+                    <li>052-2113053 | 055-2765425 <i data-lucide="phone" class="w-4 h-4 text-brand inline ml-2"></i></li>
+                    <li>שירות בגוש עציון <i data-lucide="map-pin" class="w-4 h-4 text-brand inline ml-2"></i></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-slate-100 font-bold mb-4 text-lg">ניווט מהיר</h3>
+                <ul class="space-y-2 inline-block text-right">
+                    <li><button onclick="navigateTo('home')" class="hover:text-brand transition-colors">עמוד הבית</button></li>
+                    <li><button onclick="navigateTo('book')" class="hover:text-brand transition-colors">הזמנת שירות</button></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 mt-8 pt-8 border-t border-slate-900 text-center text-sm opacity-60">
+            © 2026 נקי נקי - כל הזכויות שמורות.
+        </div>
+    </footer>
+
+    <div id="toast-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =========================================================================
+        // 2. הגדרות מסד הנתונים של פיירבייס - הדבק את הקוד שלך כאן!
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCprnstHOI-A_-0HbFK3edbcNVSefeC4DI",
+            authDomain: "nekineki-80e03.firebaseapp.com",
+            projectId: "nekineki-80e03",
+            storageBucket: "nekineki-80e03.firebasestorage.app",
+            messagingSenderId: "25337441796",
+            appId: "1:25337441796:web:d70ee94edf505df5c84f51",
+            measurementId: "G-NBZ4CRFZJK"
+        };
+        // =========================================================================
+
+        let db, auth, currentUser, unsubscribeLeads;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nekineki';
+
+        const configToUse = firebaseConfig.apiKey.includes("AIzaSyCprnstHOI-A_-0HbFK3edbcNVSefeC4DI") && typeof __firebase_config !== 'undefined' 
+                            ? JSON.parse(__firebase_config) 
+                            : firebaseConfig;
+
+        const app = initializeApp(configToUse);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+        initAuth();
+        
+        onAuthStateChanged(auth, (user) => { currentUser = user; });
+
+        // --- UI Logic with Defensive Checks ---
+        window.navigateTo = (pageId) => {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            const targetPage = document.getElementById('page-' + pageId);
+            if(targetPage) targetPage.classList.add('active');
+            
+            // Safe checking of elements before accessing 'style'
+            ['top-bar', 'main-header', 'main-footer'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.style.display = (pageId === 'admin') ? 'none' : '';
+                }
+            });
+            
+            const mobileMenu = document.getElementById('mobile-menu');
+            if(mobileMenu) mobileMenu.classList.add('hidden');
+            
+            window.scrollTo(0, 0);
+        };
+
+        window.toggleMobileMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
+        window.scrollToServices = () => { navigateTo('home'); setTimeout(() => document.getElementById('services-section').scrollIntoView({behavior: 'smooth'}), 100); };
+        window.showToast = (msg, type='success') => { const c=document.getElementById('toast-container'), t=document.createElement('div'); t.className=`toast ${type}`; t.innerHTML=msg; c.appendChild(t); setTimeout(()=>t.remove(), 4000); };
+        window.setWorkersSelection = (val, el) => { document.getElementById('form-workers').value=val; document.querySelectorAll('.worker-btn').forEach(b=>b.className="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-slate-50 text-slate-600 border-slate-200"); el.className="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-brand/10 text-brand border-brand"; };
+        
+        window.handleSettlementChange = (selectEl) => {
+            const container = document.getElementById('custom-settlement-container');
+            const customInput = document.getElementById('form-custom-settlement');
+            if (selectEl.value === 'אחר') {
+                container.classList.add('show');
+                customInput.setAttribute('required', 'true');
+            } else {
+                container.classList.remove('show');
+                customInput.removeAttribute('required');
+                customInput.value = '';
+            }
+        };
+
+        // --- Form Submit ---
+        window.submitForm = async (e) => {
+            e.preventDefault();
+            if(!currentUser) { showToast('מתחבר לשרת, נסה שוב בעוד שנייה', 'error'); return; }
+            const btn = document.getElementById('submit-btn'); btn.innerText = 'שולח...'; btn.disabled = true;
+            
+            let finalSettlement = document.getElementById('form-settlement').value;
+            if (finalSettlement === 'אחר') {
+                finalSettlement = document.getElementById('form-custom-settlement').value;
+            }
+
+            try {
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), {
+                    name: document.getElementById('form-name').value, 
+                    phone: document.getElementById('form-phone').value,
+                    settlement: finalSettlement, 
+                    size: document.getElementById('form-size').value,
+                    workers: document.getElementById('form-workers').value, 
+                    notes: document.getElementById('form-notes').value,
+                    status: 'חדש', 
+                    createdAt: serverTimestamp(), 
+                    userId: currentUser.uid
+                });
+                showToast('הפנייה נשלחה בהצלחה!'); 
+                document.getElementById('booking-form').reset(); 
+                document.getElementById('custom-settlement-container').classList.remove('show');
+                setTimeout(()=>navigateTo('home'), 2000);
+            } catch (err) { console.error(err); showToast('שגיאה בשליחה', 'error'); } 
+            finally { btn.innerText = 'שלח בקשה לקבלת הצעת מחיר'; btn.disabled = false; }
+        };
+
+        // --- Admin Logic ---
+        window.handleAdminLogin = (e) => { e.preventDefault(); if(document.getElementById('admin-pwd').value==='admin') { document.getElementById('admin-login-view').style.display='none'; document.getElementById('admin-dashboard-view').style.display='block'; loadAdminData(); } else showToast('סיסמה שגויה', 'error'); };
+        window.logoutAdmin = () => { document.getElementById('admin-login-view').style.display='block'; document.getElementById('admin-dashboard-view').style.display='none'; if(unsubscribeLeads) unsubscribeLeads(); navigateTo('home'); };
+
+        const loadAdminData = () => {
+            unsubscribeLeads = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'leads'), orderBy('createdAt', 'desc')), (snapshot) => {
+                const leads = []; snapshot.forEach(doc => leads.push({id: doc.id, ...doc.data()}));
+                const tbody = document.getElementById('leads-table-body');
+                if(!leads.length) { tbody.innerHTML = `<tr><td colspan="5" class="text-center p-8">אין פניות</td></tr>`; return; }
+                tbody.innerHTML = leads.map(lead => {
+                    let phone = (lead.phone||'').replace(/\D/g, ''); if(phone.startsWith('0')) phone = '972'+phone.substring(1);
+                    const safeName = (lead.name || '').replace(/'/g, "\\'");
+                    const safeSettlement = (lead.settlement || '').replace(/'/g, "\\'");
+                    return `<tr class="border-b hover:bg-slate-50 transition-colors">
+                    <td class="p-4">
+                        <div class="font-bold text-slate-900">${lead.name}</div>
+                        <div class="text-sm text-slate-600" dir="ltr">${lead.phone}</div>
+                        <div class="inline-block mt-1 px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-md text-xs font-bold">${lead.settlement}</div>
+                    </td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800 text-sm">${lead.workers || '2'} עובדים</div>
+                        <div class="text-xs text-slate-500 mt-1">${lead.size || '-'}</div>
+                    </td>
+                    <td class="p-4">
+                        <p class="text-xs text-slate-600 max-w-[150px] truncate" title="${lead.notes||''}">${lead.notes || '-'}</p>
+                    </td>
+                    <td class="p-4">
+                        <select onchange="updateStatus('${lead.id}', this.value)" class="text-sm p-1.5 rounded-lg border font-bold cursor-pointer outline-none 
+                            ${lead.status==='חדש' ? 'bg-amber-50 text-amber-700 border-amber-200' : lead.status==='בטיפול' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
+                            <option value="חדש" ${lead.status==='חדש'?'selected':''}>🟡 חדש</option>
+                            <option value="בטיפול" ${lead.status==='בטיפול'?'selected':''}>🔵 בטיפול</option>
+                            <option value="הושלם" ${lead.status==='הושלם'?'selected':''}>🟢 הושלם</option>
+                        </select>
+                    </td>
+                    <td class="p-4 text-center whitespace-nowrap">
+                        <button onclick="handleWaClick('${lead.id}', '${lead.status}', '${phone}', '${safeName}', '${safeSettlement}')" class="bg-emerald-500 hover:bg-emerald-600 transition-colors text-white p-2 rounded-lg ml-2" title="פתח וואטסאפ"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+                        <button onclick="deleteLead('${lead.id}')" class="bg-red-50 text-red-500 hover:bg-red-100 transition-colors p-2 rounded-lg border border-red-100" title="מחק"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td></tr>`;
+                }).join('');
+                lucide.createIcons();
+            }, (error) => {
+                console.error("שגיאה במשיכת הלידים: ", error);
+            });
+        };
+        window.updateStatus = async (id, status) => { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id), {status}); };
+        window.deleteLead = async (id) => { if(confirm('למחוק פנייה זו לצמיתות?')) await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'leads', id)); };
+        window.handleWaClick = (id, status, phone, name, settlement) => { 
+            const msg = `שלום ${name}, ראינו את פנייתך לגבי שירותי ניקיון ב${settlement}. נשמח לתת לך פרטים! צוות נקי-נקי.`;
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank'); 
+            if(status==='חדש') window.updateStatus(id, 'בטיפול'); 
+        };
+        
+        lucide.createIcons();
+    </script>
+</body>
+</html>
