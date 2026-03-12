@@ -44,6 +44,10 @@
             max-height: 100px;
             margin-top: 1rem;
         }
+
+        /* Service card checklist animation */
+        .service-item { transition: transform 0.2s ease, color 0.2s ease; }
+        .service-item:hover { transform: translateX(-4px); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col selection:bg-brand selection:text-white">
@@ -137,26 +141,106 @@
                         <h2 class="text-4xl font-black text-slate-900 mb-4">מה אנחנו מנקים?</h2>
                         <p class="text-slate-600 text-lg max-w-2xl mx-auto">התאמנו את חבילות השירות שלנו במיוחד לדרישות הניקיון הקפדניות של חג הפסח ולתחזוקה שוטפת.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-brand mb-6"><i data-lucide="home" class="w-7 h-7"></i></div>
-                            <h3 class="text-2xl font-bold text-slate-900 mb-3">ניקיון קומפלט לבית</h3>
-                            <p class="text-slate-600 leading-relaxed mb-8">שירות מקיף הכולל שטיפת רצפות, שאיבת שטיחים, ניקוי אבק מכל המשטחים, פאנלים ודלתות.</p>
-                            <button onclick="navigateTo('book')" class="text-brand font-bold flex items-center gap-2 w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i> מעבר להזמנה</button>
+
+                    <!-- Single large service card -->
+                    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-md border border-slate-100 overflow-hidden">
+                        <!-- Card Header -->
+                        <div class="bg-slate-900 p-8 md:p-10 relative overflow-hidden">
+                            <div class="absolute top-[-30%] left-[-5%] w-72 h-72 bg-brand rounded-full mix-blend-multiply filter blur-[96px] opacity-20"></div>
+                            <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                                <div>
+                                    <div class="inline-flex items-center gap-2 bg-brand/20 text-brand border border-brand/30 px-3 py-1 rounded-full text-sm font-bold mb-4">
+                                        <i data-lucide="users" class="w-4 h-4"></i> הצוות שלנו
+                                    </div>
+                                    <h3 class="text-3xl md:text-4xl font-black text-white leading-snug">העובדים שלנו מנקים<br/><span class="text-brand">יסודי, מהיר ואמין.</span></h3>
+                                    <p class="text-slate-400 mt-3 text-lg max-w-lg leading-relaxed">כל עובד עובר הכשרה מקצועית ומגיע עם ציוד מלא. אנחנו לא עוזבים עד שכל פינה בבית שלכם זורחת.</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <button onclick="navigateTo('book')" class="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold bg-brand text-slate-900 shadow-[0_0_20px_rgba(76,180,231,0.35)] hover:-translate-y-1 transition-all text-base whitespace-nowrap">
+                                        הזמן עכשיו <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-brand mb-6"><i data-lucide="wind" class="w-7 h-7"></i></div>
-                            <h3 class="text-2xl font-bold text-slate-900 mb-3">ניקוי חלונות ותריסים</h3>
-                            <p class="text-slate-600 leading-relaxed mb-8">פירוק ושטיפה יסודית של תריסים, ניקוי מסילות, הברקת חלונות מכל הכיוונים למראה נקי וללא סימנים.</p>
-                            <button onclick="navigateTo('book')" class="text-brand font-bold flex items-center gap-2 w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i> מעבר להזמנה</button>
-                        </div>
-                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:-translate-y-2 transition-transform duration-300">
-                            <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-brand mb-6"><i data-lucide="droplets" class="w-7 h-7"></i></div>
-                            <h3 class="text-2xl font-bold text-slate-900 mb-3">מטבחים וחדרי רחצה</h3>
-                            <p class="text-slate-600 leading-relaxed mb-8">ניקוי יסודי של ארונות מטבח (פנים וחוץ), מקררים, תנורים, חיטוי והסרת אבנית מכלים סניטריים וקרמיקה.</p>
-                            <button onclick="navigateTo('book')" class="text-brand font-bold flex items-center gap-2 w-full"><i data-lucide="arrow-left" class="w-5 h-5"></i> מעבר להזמנה</button>
+
+                        <!-- Card Body - service list -->
+                        <div class="p-8 md:p-10">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+
+                                <div class="service-item flex items-start gap-3">
+                                    <div class="mt-0.5 w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900">ניקוי קומפלט לבית</p>
+                                        <p class="text-sm text-slate-500">שטיפת רצפות, שאיבת שטיחים, ניקוי אבק מכל המשטחים</p>
+                                    </div>
+                                </div>
+
+                                <div class="service-item flex items-start gap-3">
+                                    <div class="mt-0.5 w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900">חלונות ותריסים</p>
+                                        <p class="text-sm text-slate-500">פירוק ושטיפה יסודית, הברקת חלונות ללא סימנים</p>
+                                    </div>
+                                </div>
+
+                                <div class="service-item flex items-start gap-3">
+                                    <div class="mt-0.5 w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900">מטבח יסודי</p>
+                                        <p class="text-sm text-slate-500">ניקוי ארונות פנים וחוץ, מקרר, תנור וכיריים</p>
+                                    </div>
+                                </div>
+
+                                <div class="service-item flex items-start gap-3">
+                                    <div class="mt-0.5 w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900">חדרי רחצה ושירותים</p>
+                                        <p class="text-sm text-slate-500">חיטוי, הסרת אבנית וניקוי קרמיקה לעומק</p>
+                                    </div>
+                                </div>
+
+                                <div class="service-item flex items-start gap-3">
+                                    <div class="mt-0.5 w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900">פאנלים ודלתות</p>
+                                        <p class="text-sm text-slate-500">ניקוי וצחצוח כל הדלתות, הידיות והפאנלים</p>
+                                    </div>
+                                </div>
+
+                                <div class="service-item flex items-start gap-3">
+                                    <div class="mt-0.5 w-6 h-6 rounded-lg bg-brand/10 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-4 h-4 text-brand"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-900">ריהוט ומדפים</p>
+                                        <p class="text-sm text-slate-500">הסרת אבק יסודית מכל המשטחים והמדפים</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-8 pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <p class="text-slate-500 text-sm flex items-center gap-2">
+                                    <i data-lucide="info" class="w-4 h-4 text-brand flex-shrink-0"></i>
+                                    ניתן לבקש שירותים ספציפיים בלבד — מתאימים את הצוות לצרכים שלכם
+                                </p>
+                                <button onclick="navigateTo('book')" class="flex items-center gap-2 px-6 py-3 rounded-2xl font-bold bg-slate-900 text-white hover:-translate-y-1 transition-all text-sm whitespace-nowrap">
+                                    קבל הצעת מחיר <i data-lucide="sparkles" class="w-4 h-4 text-brand"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -283,9 +367,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // =========================================================================
-        // 2. הגדרות מסד הנתונים של פיירבייס - הדבק את הקוד שלך כאן!
-        // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyCprnstHOI-A_-0HbFK3edbcNVSefeC4DI",
             authDomain: "nekineki-80e03.firebaseapp.com",
@@ -295,7 +376,6 @@
             appId: "1:25337441796:web:d70ee94edf505df5c84f51",
             measurementId: "G-NBZ4CRFZJK"
         };
-        // =========================================================================
 
         let db, auth, currentUser, unsubscribeLeads;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'nekineki';
@@ -319,13 +399,11 @@
         
         onAuthStateChanged(auth, (user) => { currentUser = user; });
 
-        // --- UI Logic with Defensive Checks ---
         window.navigateTo = (pageId) => {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             const targetPage = document.getElementById('page-' + pageId);
             if(targetPage) targetPage.classList.add('active');
             
-            // Safe checking of elements before accessing 'style'
             ['top-bar', 'main-header', 'main-footer'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) {
@@ -357,7 +435,6 @@
             }
         };
 
-        // --- Form Submit ---
         window.submitForm = async (e) => {
             e.preventDefault();
             if(!currentUser) { showToast('מתחבר לשרת, נסה שוב בעוד שנייה', 'error'); return; }
@@ -388,7 +465,6 @@
             finally { btn.innerText = 'שלח בקשה לקבלת הצעת מחיר'; btn.disabled = false; }
         };
 
-        // --- Admin Logic ---
         window.handleAdminLogin = (e) => { e.preventDefault(); if(document.getElementById('admin-pwd').value==='admin') { document.getElementById('admin-login-view').style.display='none'; document.getElementById('admin-dashboard-view').style.display='block'; loadAdminData(); } else showToast('סיסמה שגויה', 'error'); };
         window.logoutAdmin = () => { document.getElementById('admin-login-view').style.display='block'; document.getElementById('admin-dashboard-view').style.display='none'; if(unsubscribeLeads) unsubscribeLeads(); navigateTo('home'); };
 
@@ -444,6 +520,4 @@
         lucide.createIcons();
     </script>
 </body>
-
 </html>
-
