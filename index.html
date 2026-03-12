@@ -153,7 +153,7 @@
                                         <i data-lucide="users" class="w-4 h-4"></i> הצוות שלנו
                                     </div>
                                     <h3 class="text-3xl md:text-4xl font-black text-white leading-snug">העובדים שלנו מנקים<br/><span class="text-brand">יסודי, מהיר ואמין.</span></h3>
-                                    <p class="text-slate-400 mt-3 text-lg max-w-lg leading-relaxed">כל עובד עובר הכשרה מקצועית ומגיע עם ידע. אנחנו לא עוזבים עד שכל פינה בבית שלכם זורחת.</p>
+                                    <p class="text-slate-400 mt-3 text-lg max-w-lg leading-relaxed">כל עובד עובר הכשרה מקצועית ומגיע עם ציוד מלא. אנחנו לא עוזבים עד שכל פינה בבית שלכם זורחת.</p>
                                 </div>
                                 <div class="flex-shrink-0">
                                     <button onclick="navigateTo('book')" class="flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold bg-brand text-slate-900 shadow-[0_0_20px_rgba(76,180,231,0.35)] hover:-translate-y-1 transition-all text-base whitespace-nowrap">
@@ -212,8 +212,8 @@
                                         <i data-lucide="check" class="w-4 h-4 text-brand"></i>
                                     </div>
                                     <div>
-                                        <p class="font-bold text-slate-900">משטחים ודלתות</p>
-                                        <p class="text-sm text-slate-500">ניקוי וצחצוח כל הדלתות, הידיות והאבק</p>
+                                        <p class="font-bold text-slate-900">פאנלים ודלתות</p>
+                                        <p class="text-sm text-slate-500">ניקוי וצחצוח כל הדלתות, הידיות והפאנלים</p>
                                     </div>
                                 </div>
 
@@ -295,6 +295,11 @@
                                 <button type="button" onclick="setWorkersSelection('4+', this)" class="worker-btn flex-1 py-3 rounded-xl border font-bold transition-all bg-slate-50 text-slate-600 border-slate-200">4+</button>
                             </div>
                             <p class="text-xs text-slate-500 mt-2">* ההמלצה שלנו לבית סטנדרטי היא צוות של 2 עובדים.</p>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-700 mb-2">תאריך מבוקש לניקיון *</label>
+                            <input required type="date" id="form-date" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-brand" dir="ltr">
+                            <p class="text-xs text-slate-500 mt-2">* נחזור אליכם לאישור הזמינות בתאריך המבוקש.</p>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-700 mb-2">הערות (לא חובה)</label>
@@ -451,7 +456,8 @@
                     phone: document.getElementById('form-phone').value,
                     settlement: finalSettlement, 
                     size: document.getElementById('form-size').value,
-                    workers: document.getElementById('form-workers').value, 
+                    workers: document.getElementById('form-workers').value,
+                    date: document.getElementById('form-date').value,
                     notes: document.getElementById('form-notes').value,
                     status: 'חדש', 
                     createdAt: serverTimestamp(), 
@@ -486,6 +492,7 @@
                     <td class="p-4">
                         <div class="font-bold text-slate-800 text-sm">${lead.workers || '2'} עובדים</div>
                         <div class="text-xs text-slate-500 mt-1">${lead.size || '-'}</div>
+                        ${lead.date ? `<div class="text-xs text-brand font-bold mt-1">📅 ${lead.date}</div>` : ''}
                     </td>
                     <td class="p-4">
                         <p class="text-xs text-slate-600 max-w-[150px] truncate" title="${lead.notes||''}">${lead.notes || '-'}</p>
@@ -521,6 +528,3 @@
     </script>
 </body>
 </html>
-
-
-
